@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../../../data/repositories/authentication/authentication_repository.dart';
 import '../models/experience.dart';
-import '../screens/portfolio/widgets/category.dart';
+import '../screens/portfolio/widgets/category_widget.dart';
+
 
 class PortfolioController extends GetxController {
   final TextEditingController titleController = TextEditingController();
@@ -14,11 +14,27 @@ class PortfolioController extends GetxController {
   int selectedEndMonth = DateTime.now().month;
   int selectedEndYear = DateTime.now().year;
 
-  final items = <Category>[].obs;
+  final RxList<Category> items = <Category>[].obs;
   final RxList<Experience> experiences = <Experience>[].obs;
 
   void addExperience(Experience newExperience, int categoryIndex) {// Assign the category index
     experiences.add(newExperience);
+  }
+
+  void updateExperienceImage(int categoryIndex, Experience? experience, String imagePath) {
+    if (experience != null) {
+      Experience updatedExperience = Experience(
+        title: experience.title,
+        startDate: experience.startDate,
+        endDate: experience.endDate,
+        description: experience.description,
+        image: imagePath, // Update the image path here
+        categoryIndex: experience.categoryIndex,
+      );
+      // Update the experience in your data structure (e.g., a list of experiences)
+      // This part depends on how you are storing your experiences
+    }
+    update(); // If you're using GetX, call update() to update the UI
   }
 
   void addItem(BuildContext context) {
@@ -237,5 +253,54 @@ class PortfolioController extends GetxController {
       update();
     }
   }
+
+  Future<void> savePortfolioData() async {
+    String userId = FirebaseAuth.instance.currentUser!.uid;
+    CollectionReference userCategoriesRef = FirebaseFirestore.instance.collection('Users').doc(userId).collection('categories');
+
+    // Start a batch write
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    // Step 1: Schedule deletion of existing categories and their experiences
+    QuerySnapshot existingCategoriesSnapshot = await userCategoriesRef.get();
+    for (var categoryDoc in existingCategoriesSnapshot.docs) {
+      QuerySnapshot experiencesSnapshot = await categoryDoc.reference.collection('experiences').get();
+      for (var experienceDoc in experiencesSnapshot.docs) {
+        // Schedule deletion of each experience
+        batch.delete(experienceDoc.reference);
+      }
+
+      // Schedule deletion of the category
+      batch.delete(categoryDoc.reference);
+    }
+
+    // Step 2: Schedule addition of new categories and their experiences
+    for (final category in items) {
+      DocumentReference categoryDocRef = userCategoriesRef.doc();  // Let Firestore generate the doc ID
+
+      // Schedule addition of the category document
+      batch.set(categoryDocRef, {
+        'name': category.name,
+        // Add other category fields as necessary
+      });
+
+      // Schedule addition of experiences for this category
+      final categoryExperiences = experiences.where((exp) => exp.categoryIndex == category.index).toList();
+      for (final experience in categoryExperiences) {
+        DocumentReference experienceDocRef = categoryDocRef.collection('experiences').doc();  // Let Firestore generate the doc ID
+        batch.set(experienceDocRef, {
+          'title': experience.title,
+          'startDate': experience.startDate,
+          'endDate': experience.endDate,
+          'description': experience.description,
+          // Include other experience fields as necessary
+        });
+      }
+    }
+
+    // Commit the batch once after all operations have been scheduled
+    await batch.commit();
+  }
+
 
 }

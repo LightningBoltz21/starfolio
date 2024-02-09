@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:starfolio/features/discover/screens/portfolio/widgets/experience_card.dart';
@@ -6,7 +6,7 @@ import 'package:starfolio/features/discover/screens/portfolio/widgets/experience
 import '../../../controllers/portfolio_controller.dart';
 import '../../../models/experience.dart';
 import '../add_items.dart';
-import '../portfolio.dart';
+
 
 class Category extends StatelessWidget {
   final String name;

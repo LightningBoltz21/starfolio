@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:starfolio/features/discover/screens/portfolio/widgets/category.dart';
+import 'package:starfolio/features/discover/screens/portfolio/widgets/category_widget.dart';
 import 'package:starfolio/features/discover/screens/portfolio/widgets/portfolio_app_bar.dart';
 import 'package:starfolio/utils/constants/colors.dart';
 import 'package:starfolio/utils/constants/image_strings.dart';
@@ -33,16 +33,16 @@ class Portfolio extends StatelessWidget {
                     : TImages.onBoardingImage1;
                 return userController.imageUploading.value
                     ? const TShimmerEffect(
-                        width: 80,
-                        height: 80,
-                        radius: 80,
-                      )
+                  width: 80,
+                  height: 80,
+                  radius: 80,
+                )
                     : TCircularImage(
-                        image: image,
-                        width: 200,
-                        height: 200,
-                        isNetworkImage: networkImage.isNotEmpty,
-                      );
+                  image: image,
+                  width: 200,
+                  height: 200,
+                  isNetworkImage: networkImage.isNotEmpty,
+                );
               }),
               const SizedBox(height: TSizes.spaceBtwItems),
               Padding(

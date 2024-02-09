@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../controllers/portfolio_controller.dart';
 import '../../models/experience.dart';
@@ -73,6 +74,7 @@ class AddItems extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   // TODO: Implement functionality to add a photo
+                  _pickImage();
                 },
                 child: const Text('Add Photo'),
               ),
@@ -149,7 +151,7 @@ class AddItems extends StatelessWidget {
   List<DropdownMenuItem<int>> _buildMonthDropdownItems() {
     return List<DropdownMenuItem<int>>.generate(
       12,
-      (index) => DropdownMenuItem(
+          (index) => DropdownMenuItem(
         value: index + 1,
         child: Text('${_getMonthName(index + 1)}'),
       ),
@@ -192,6 +194,16 @@ class AddItems extends StatelessWidget {
         return 'December';
       default:
         return '';
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final ImagePicker _picker = ImagePicker();
+    // Pick an image
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      // Assuming you have a method in your controller to update the image of an experience
+      controller.updateExperienceImage(categoryIndex, existingExperience, image.path);
     }
   }
 }

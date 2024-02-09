@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:starfolio/features/discover/controllers/portfolio_controller.dart';
 import 'package:starfolio/features/personalization/controllers/user_controller.dart';
@@ -43,7 +44,7 @@ class PortfolioAppBar extends StatelessWidget {
           }),
         ],
       ),
-      actions: [CartCounterIcon(onPressed: () => controller2.addItem(context), iconColor: TColors.white)],
+      actions: [IconButton(onPressed: () {controller2.savePortfolioData();}, icon: const Icon(Iconsax.save_2, color: Colors.white)), CartCounterIcon(onPressed: () => controller2.addItem(context), iconColor: TColors.white)],
     );
   }
 }

@@ -45,10 +45,9 @@ class ExperienceCard extends StatelessWidget {
                 // Placeholder for the image
                 const SizedBox(width: 8.0),
                 Container(
-                  width: 50.0,
-                  height: 50.0,
-                  color: Colors.grey, // Placeholder color
-                  child: const Icon(Iconsax.magic_star1), // Placeholder icon
+                  width: 35.0,
+                  height: 35.0,
+                  child: const Icon(Iconsax.magic_star1, color: TColors.primary,), // Placeholder icon
                 ),
                 const SizedBox(width: 10.0),
                 // Experience details

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Experience {
   final String title;
   final DateTime startDate;
