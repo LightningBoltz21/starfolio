@@ -12,6 +12,7 @@ import '../../screens/password_configuration/reset_password.dart';
 class ForgetPasswordController extends GetxController {
   static ForgetPasswordController get instance => Get.find();
 
+  //v ariables
   final email = TextEditingController();
   GlobalKey<FormState> forgetPasswordFormKey = GlobalKey<FormState>();
 
@@ -33,20 +34,26 @@ class ForgetPasswordController extends GetxController {
         return;
       }
 
+      // waits for email to be sent
       await AuthenticationRepository.instance.sendPasswordResetEmail(email.text.trim());
 
+      // removes full screen loader
       TFullScreenLoader.stopLoading();
 
+      // notifies the user of a success that email has been sent
       TLoaders.successSnackBar(title: "Email Sent", message: "EMAIL link sent to reset your password".tr);
 
+      // go to reset password screen w/ getx
       Get.to(() => ResetPasswordScreen(email: email.text.trim()));
     }
     catch (e) {
+      // in case of error, send error message
       TFullScreenLoader.stopLoading();
       TLoaders.errorSnackBar(title: 'Oh Snap!', message: e.toString());
     }
   }
 
+  // resend password email in case the user didn't get it :( (same logic as before)
   resendPasswordResetEmail(String email) async {
     try {
       // Start Loading

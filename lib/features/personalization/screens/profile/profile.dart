@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -19,9 +20,13 @@ import '../../controllers/user_controller.dart';
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
+
   @override
   Widget build(BuildContext context) {
     final controller = UserController.instance;
+    String schoolOrg  = controller.user.value.schoolOrg ?? '';
+    String gradeRole = controller.user.value.gradeRole ?? '';
+
     return Scaffold(
       appBar: const AppBar2(
         showBackArrow: true,
@@ -32,6 +37,7 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           children: [
             // Profile Picture
+
             SizedBox(
               width: double.infinity,
               child: Column(
@@ -60,6 +66,7 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
+
 
             // Details
             const SizedBox(height: TSizes.spaceBtwItems / 2),
@@ -102,14 +109,14 @@ class ProfileScreen extends StatelessWidget {
               value: controller.user.value.phoneNumber,
             ),
             TProfileMenu(
-              onPressed: () {},
-              title: 'Gender',
-              value: 'Male',
+              onPressed: () => Get.to(() => const ChangeSchoolGrade()),
+              title: 'School/Org',
+              value: schoolOrg,
             ),
             TProfileMenu(
-              onPressed: () {},
-              title: 'Date of Birth',
-              value: '4/21/2007',
+              onPressed: () => Get.to(() => const ChangeSchoolGrade()),
+              title: 'Grade/Role',
+              value: gradeRole,
             ),
 
             const Divider(),
@@ -147,7 +154,7 @@ class UpdateNameController extends GetxController {
 
   Future<void> initializeNames() async {
     firstName.text = userController.user.value.firstName;
-    firstName.text = userController.user.value.firstName;
+    lastName.text = userController.user.value.lastName;
   }
 
   Future<void> updateUserName() async {
@@ -166,6 +173,11 @@ class UpdateNameController extends GetxController {
         'FirstName': firstName.text.trim(),
         'LastName': lastName.text.trim()
       };
+
+      if (kDebugMode) {
+        print(name);
+      }
+
       await userRepository.updateSingleField(name);
 
       userController.user.value.firstName = firstName.text.trim();
@@ -175,6 +187,65 @@ class UpdateNameController extends GetxController {
 
       TLoaders.successSnackBar(
           title: 'Congratulations', message: 'Your name has been updated!');
+
+      Get.off(() => const ProfileScreen());
+    } catch (e) {
+      TFullScreenLoader.stopLoading();
+      TLoaders.errorSnackBar(title: 'Oh Snap!', message: e.toString());
+    }
+  }
+}
+
+class UpdateSchoolGradeController extends GetxController {
+  static UpdateSchoolGradeController get instance => Get.find();
+
+  final schoolOrg = TextEditingController();
+  final gradeRole = TextEditingController();
+  final userController = UserController.instance;
+  final userRepository = Get.put(UserRepository());
+  GlobalKey<FormState> updateUserNameFormKey = GlobalKey<FormState>();
+
+  @override
+  void onInit() {
+    initializeNames();
+    super.onInit();
+  }
+
+  Future<void> initializeNames() async {
+    schoolOrg.text = userController.user.value.schoolOrg;
+    gradeRole.text = userController.user.value.gradeRole;
+  }
+
+  Future<void> updateUserName() async {
+    try {
+      // Start Loading
+      TFullScreenLoader.openLoadingDialog(
+          'Logging you in...', TImages.docerAnimation);
+      // Check Internet Connectivity
+      final isConnected = await NetworkManager.instance.isConnected();
+      if (!isConnected) {
+        TFullScreenLoader.stopLoading();
+        return;
+      }
+
+      Map<String, dynamic> name = {
+        'SchoolOrg': schoolOrg.text.trim(),
+        'GradeRole': gradeRole.text.trim()
+      };
+
+      if (kDebugMode) {
+        print(name);
+      }
+
+      await userRepository.updateSingleField(name);
+
+      userController.user.value.schoolOrg = schoolOrg.text.trim();
+      userController.user.value.gradeRole = gradeRole.text.trim();
+
+      TFullScreenLoader.stopLoading();
+
+      TLoaders.successSnackBar(
+          title: 'Congratulations', message: 'Your School/Org and/or Grade/Role has been updated!');
 
       Get.off(() => const ProfileScreen());
     } catch (e) {

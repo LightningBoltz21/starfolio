@@ -40,10 +40,60 @@ class ChangeName extends StatelessWidget {
                 ),
                 const SizedBox(height: TSizes.spaceBtwInputFields),
                 TextFormField(
-                  controller: controller.firstName,
+                  controller: controller.lastName,
                   validator: (value) => TValidator.validateEmptyText('Last Name', value),
                   expands: false,
-                  decoration: const InputDecoration(labelText: TTexts.firstName, prefixIcon: Icon(Iconsax.user)),
+                  decoration: const InputDecoration(labelText: TTexts.lastName, prefixIcon: Icon(Iconsax.user)),
+                ),
+              ],
+            )),
+            const SizedBox(height: TSizes.spaceBtwSections),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(onPressed: () => controller.updateUserName(), child: const Text('Save')),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ChangeSchoolGrade extends StatelessWidget {
+  const ChangeSchoolGrade({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.put(UpdateSchoolGradeController());
+    return Scaffold(
+      appBar: AppBar2(
+        showBackArrow: true,
+        title: Text('Change School/Organization and Grade/Role',
+            style: Theme.of(context).textTheme.headlineSmall),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(TSizes.defaultSpace),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+                'STARFOLIO is for students, teachers, employers, and more!' ,
+                style: Theme.of(context).textTheme.labelMedium),
+            const SizedBox(height: TSizes.spaceBtwSections),
+            Form(key: controller.updateUserNameFormKey, child: Column(
+              children: [
+                TextFormField(
+                  controller: controller.schoolOrg,
+                  validator: (value) => TValidator.validateEmptyText('First Name', value),
+                  expands: false,
+                  decoration: const InputDecoration(labelText: "Enter School/Org", prefixIcon: Icon(Iconsax.user)),
+                ),
+                const SizedBox(height: TSizes.spaceBtwInputFields),
+                TextFormField(
+                  controller: controller.gradeRole,
+                  validator: (value) => TValidator.validateEmptyText('Last Name', value),
+                  expands: false,
+                  decoration: const InputDecoration(labelText: "Enter Grade/Role", prefixIcon: Icon(Iconsax.user)),
                 ),
               ],
             )),

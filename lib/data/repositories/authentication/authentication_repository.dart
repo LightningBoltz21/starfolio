@@ -1,15 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:starfolio/common/widgets/list_tiles/user_profile_tile.dart';
 import 'package:starfolio/data/repositories/user/user_repository.dart';
 import 'package:starfolio/features/authentication/screens/login/login.dart';
 import 'package:starfolio/features/authentication/screens/onboarding/onboarding.dart';
+import 'package:starfolio/features/discover/controllers/portfolio_controller.dart';
 import 'package:starfolio/utils/exceptions/firebase_auth_exceptions.dart';
 import 'package:starfolio/utils/exceptions/format_exceptions.dart';
 import 'package:starfolio/utils/exceptions/platform_exceptions.dart';
@@ -36,7 +35,8 @@ class AuthenticationRepository extends GetxController {
   screenRedirect() async {
     final user = _auth.currentUser;
     if (user != null) {
-      if (user.emailVerified){
+      if (user.emailVerified) {
+        await Get.put(PortfolioController()).fetchPortfolioData(user.uid);
         Get.offAll(() => const NavigationMenu());
       } else {
         Get.offAll(() => VerifyEmailScreen(email: _auth.currentUser?.email));
@@ -51,9 +51,11 @@ class AuthenticationRepository extends GetxController {
   }
 
   /// [Email Authentication] Sign In
-  Future<UserCredential> loginWithEmailAndPassword(String email, String password) async {
+  Future<UserCredential> loginWithEmailAndPassword(
+      String email, String password) async {
     try {
-      return await _auth.signInWithEmailAndPassword(email: email, password: password);
+      return await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
     } on FirebaseAuthException catch (e) {
       throw TFirebaseAuthException(e.code).message;
     } on FirebaseException catch (e) {
@@ -68,9 +70,11 @@ class AuthenticationRepository extends GetxController {
   }
 
   /// [Email Authentication] Register
-  Future<UserCredential> registerWithEmailAndPassword(String email, String password) async {
+  Future<UserCredential> registerWithEmailAndPassword(
+      String email, String password) async {
     try {
-      return await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      return await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
     } on FirebaseAuthException catch (e) {
       throw TFirebaseAuthException(e.code).message;
     } on FirebaseException catch (e) {
@@ -124,12 +128,11 @@ class AuthenticationRepository extends GetxController {
       // trigger auth flow
       final GoogleSignInAccount? userAccount = await GoogleSignIn().signIn();
 
-      final GoogleSignInAuthentication? googleAuth =  await userAccount?.authentication;
+      final GoogleSignInAuthentication? googleAuth =
+          await userAccount?.authentication;
 
       final credentials = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken
-      );
+          accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
 
       return await _auth.signInWithCredential(credentials);
     } on FirebaseAuthException catch (e) {
@@ -166,9 +169,11 @@ class AuthenticationRepository extends GetxController {
   }
 
   /// RE-AUTHENTICATE USER
-  Future<void> reAuthenticateWithEmailAndPassword(String email, String password) async {
+  Future<void> reAuthenticateWithEmailAndPassword(
+      String email, String password) async {
     try {
-      AuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
+      AuthCredential credential =
+          EmailAuthProvider.credential(email: email, password: password);
 
       await _auth.currentUser!.reauthenticateWithCredential(credential);
     } on FirebaseAuthException catch (e) {
@@ -201,6 +206,4 @@ class AuthenticationRepository extends GetxController {
       throw "SOMETHING WENT WRONG. PLEASE TRY AGAIN LATER";
     }
   }
-
-
 }

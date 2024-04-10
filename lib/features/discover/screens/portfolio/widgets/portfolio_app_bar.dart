@@ -10,41 +10,64 @@ import '../../../../../common/widgets/app_bar/app_bar.dart';
 import '../../../../../common/widgets/products.cart/cart_menu_icon.dart';
 import '../../../../../utils/constants/colors.dart';
 import '../../../../../utils/constants/text_strings.dart';
-import '../portfolio.dart';
+import '../../../../personalization/models/user_model.dart';
 
 class PortfolioAppBar extends StatelessWidget {
+
+  final UserModel userProfile;
+  final bool isCurrentUser;
+
   const PortfolioAppBar({
     super.key,
+    required this.userProfile,
+    required this.isCurrentUser,
   });
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(UserController());
     final controller2 = Get.put(PortfolioController());
+    print(controller.user.value);
 
     return AppBar2(
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(TTexts.homeAppbarTitle,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelMedium!
-                  .apply(color: TColors.grey)),
           Obx(() {
             if (controller.profileLoading.value) {
               return const TShimmerEffect(width: 80, height: 15);
             } else {
-              return (Text(controller.user.value.fullName,
+              return (Text(userProfile.fullName,
                   style: Theme.of(context)
                       .textTheme
                       .headlineSmall!
                       .apply(color: TColors.white)));
             }
           }),
+          Obx(() {
+            if (controller.profileLoading.value) {
+              return const TShimmerEffect(width: 80, height: 15);
+            } else {
+              var output = '${userProfile.gradeRole} @ ${userProfile.schoolOrg}';
+              return (Text(output,
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge!
+                      .apply(color: TColors.white)));
+            }
+          }),
         ],
       ),
-      actions: [IconButton(onPressed: () {controller2.savePortfolioData();}, icon: const Icon(Iconsax.save_2, color: Colors.white)), CartCounterIcon(onPressed: () => controller2.addItem(context), iconColor: TColors.white)],
+      actions: [
+        isCurrentUser ? IconButton(
+            onPressed: () {
+              controller2.savePortfolioData();
+            },
+            icon: const Icon(Iconsax.save_2, color: Colors.white)) : const SizedBox.shrink(),
+        isCurrentUser ? CartCounterIcon(
+            onPressed: () => controller2.addItem(context),
+            iconColor: TColors.white) : const SizedBox.shrink()
+      ],
     );
   }
 }

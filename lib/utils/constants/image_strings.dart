@@ -49,6 +49,7 @@ class TImages {
   static const String onBoardingImage1 = "assets/images/onboarding/star.png";
   static const String onBoardingImage2 = "assets/images/onboarding/constellation.png";
   static const String onBoardingImage3 = "assets/images/onboarding/universe.png";
+  static const String onBoardingImage4 = "assets/images/onboarding/Anish_Malepati.png";
 
   // -- Products
   static const String productImage1 = "assets/images/products/nike-shoes.png";

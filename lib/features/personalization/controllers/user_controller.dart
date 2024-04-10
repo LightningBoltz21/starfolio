@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,6 +22,10 @@ class UserController extends GetxController {
   final profileLoading = false.obs;
   Rx<UserModel> user = UserModel.empty().obs;
 
+  RxList<UserModel> allUsers = <UserModel>[].obs;
+  RxList<UserModel> filteredUsers = <UserModel>[].obs;
+  TextEditingController searchController = TextEditingController();
+
   final hidePassword = false.obs;
   final imageUploading = false.obs;
   final verifyEmail = TextEditingController();
@@ -31,6 +37,33 @@ class UserController extends GetxController {
   void onInit() {
     super.onInit();
     fetchUserRecord();
+    fetchAllUsers();
+    searchController.addListener(() {
+      filterUsers();
+    });
+  }
+
+  void fetchAllUsers() async {
+    try {
+      // Fetch all users from Firestore and update `allUsers` list
+      final usersSnapshot = await FirebaseFirestore.instance.collection('Users').get();
+      final usersData = usersSnapshot.docs.map((doc) => UserModel.fromSnapshot(doc)).toList();
+      allUsers.assignAll(usersData);
+      filteredUsers.assignAll(allUsers);
+    } catch (e) {
+      print("Error fetching users: $e");
+    }
+  }
+
+  void filterUsers() {
+    String query = searchController.text.toLowerCase();
+    List<UserModel> tempFilteredUsers = [];
+    if (query.isNotEmpty) {
+      tempFilteredUsers = allUsers.where((user) => user.fullName.toLowerCase().contains(query)).toList();
+    } else {
+      tempFilteredUsers.assignAll(allUsers);
+    }
+    filteredUsers.assignAll(tempFilteredUsers);
   }
 
   Future<void> fetchUserRecord() async {
@@ -38,7 +71,6 @@ class UserController extends GetxController {
       profileLoading.value = true;
       final user = await userRepository.fetchUserDetails();
       this.user(user);
-      profileLoading.value = false;
     } catch (e) {
       user(UserModel.empty());
     } finally {
@@ -68,6 +100,8 @@ class UserController extends GetxController {
             lastName: nameParts.length > 1 ? nameParts.sublist(1).join('') : '',
             phoneNumber: userCredentials.user!.phoneNumber ?? '',
             profilePicture: userCredentials.user!.photoURL ?? '',
+            schoolOrg: '',
+            gradeRole: '',
           );
 
           await userRepository.saveUserRecord(user);
@@ -162,13 +196,17 @@ class UserController extends GetxController {
     try {
       final image = await ImagePicker().pickImage(source: ImageSource.gallery,
           imageQuality: 70,
-          maxHeight: 512,
-          maxWidth: 512);
+          maxHeight: 1024,
+          maxWidth: 1024);
       if (image != null) {
         imageUploading.value = true;
+        if(kDebugMode) {
+          print("UPLOADING UPLOADING");
+        }
         final imageUrl = await userRepository.uploadImage(
             'Users/Images/Profile/', image);
 
+        // Update user image record
         Map<String, dynamic> json = {'ProfilePicture': imageUrl};
         await userRepository.updateSingleField(json);
 

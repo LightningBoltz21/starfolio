@@ -1,23 +1,24 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:starfolio/features/discover/screens/portfolio/widgets/experience_card.dart';
+import 'package:starfolio/features/personalization/controllers/user_controller.dart';
 
 import '../../../controllers/portfolio_controller.dart';
+import '../../../models/category_model.dart';
 import '../../../models/experience.dart';
 import '../add_items.dart';
 
+class CategoryWidget extends StatelessWidget {
+  final CategoryModel category;
+  final PortfolioController portfolioController;
+  final UserController userController;
+  final bool isCurrentUser;
 
-class Category extends StatelessWidget {
-  final String name;
-  final int index;
-  final PortfolioController portfolioController; // Add this
-
-  const Category({
+  const CategoryWidget({
     Key? key,
-    required this.name,
-    required this.index,
-    required this.portfolioController, // Add this
+    required this.category,
+    required this.portfolioController,
+    required this.isCurrentUser, required this.userController,
   }) : super(key: key);
 
   @override
@@ -26,47 +27,52 @@ class Category extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ListTile(
-          title: Text(name,
+          title: Text(category.name,
               style: Theme.of(context)
                   .textTheme
                   .headlineSmall!
                   .apply(color: Colors.white)),
-          trailing: Row(
+          trailing: isCurrentUser ? Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
                 icon: const Icon(Icons.add, color: Colors.white),
                 onPressed: () {
-                  Get.to(() => AddItems(categoryIndex: index, controller: portfolioController));
+                  Get.to(() => AddItems(
+                      categoryIndex: category.index,
+                      controller: portfolioController));
                 },
               ),
               IconButton(
                 icon: const Icon(Icons.edit, color: Colors.white),
                 onPressed: () {
-                  portfolioController.renameItem(context, index);
+                  portfolioController.renameItem(context, category.index);
                 },
               ),
               IconButton(
                 icon: const Icon(Icons.delete, color: Colors.white),
                 onPressed: () {
-                  // Remove the item from the list using GetX state management
-                  portfolioController.removeItem(index);
+                  portfolioController.removeItem(category.index);
                 },
               ),
             ],
-          ),
+          ) : const SizedBox.shrink(),
         ),
         const Divider(),
         Obx(() {
-          final List<Experience> categoryExperiences = portfolioController.experiences
-              .where((experience) => experience.categoryIndex == index)
+          final List<Experience> categoryExperiences = portfolioController
+              .experiences
+              .where((experience) => experience.categoryIndex == category.index)
               .toList();
           return ListView.builder(
             shrinkWrap: true,
             itemCount: categoryExperiences.length,
             itemBuilder: (context, experienceIndex) {
-              final Experience experience = categoryExperiences[experienceIndex];
-              return ExperienceCard(experience: experience, portfolioController: portfolioController);
+              final Experience experience =
+                  categoryExperiences[experienceIndex];
+              return ExperienceCard(
+                  experience: experience,
+                  portfolioController: portfolioController, isCurrentUser: isCurrentUser, userController: userController,);
             },
           );
         }),

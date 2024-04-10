@@ -7,3 +7,5 @@ class GeneralBindings extends Bindings {
     Get.put(NetworkManager());
   }
 }
+
+

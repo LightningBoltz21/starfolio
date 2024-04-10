@@ -1,8 +1,11 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:starfolio/features/discover/screens/connect.dart';
 import 'package:starfolio/features/discover/screens/portfolio/portfolio.dart';
+import 'package:starfolio/features/personalization/controllers/user_controller.dart';
 import 'package:starfolio/features/personalization/screens/settings/settings.dart';
 import 'package:starfolio/utils/constants/colors.dart';
 import 'package:starfolio/utils/helpers/helper_functions.dart';
@@ -42,11 +45,17 @@ class NavigationMenu extends StatelessWidget {
 
 class NavigationController extends GetxController {
   final Rx<int> selectedIndex = 0.obs;
+  final UserController userController = Get.find<UserController>();
 
-  final screens = [
-    const Portfolio(),
-    const Connect(),
-    Container(color: Colors.orange),
-    const SettingsScreen()
-  ];
+  List<Widget>? _screens;
+
+  List<Widget> get screens {
+    _screens ??= [
+        Portfolio(userProfile: userController.user.value),
+        Connect(),
+        Container(color: Colors.orange),
+        const SettingsScreen(),
+      ];
+    return _screens!;
+  }
 }
