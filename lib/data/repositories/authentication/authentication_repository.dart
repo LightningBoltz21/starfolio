@@ -14,6 +14,7 @@ import 'package:starfolio/utils/exceptions/format_exceptions.dart';
 import 'package:starfolio/utils/exceptions/platform_exceptions.dart';
 
 import '../../../features/authentication/screens/signup/verify_email.dart';
+import '../../../features/personalization/controllers/user_controller.dart';
 import '../../../navigation_menu.dart';
 import '../../../utils/exceptions/firebase_exceptions.dart';
 
@@ -36,6 +37,7 @@ class AuthenticationRepository extends GetxController {
     final user = _auth.currentUser;
     if (user != null) {
       if (user.emailVerified) {
+        await Get.put(UserController()).fetchUserById(user.uid);
         await Get.put(PortfolioController()).fetchPortfolioData(user.uid);
         Get.offAll(() => const NavigationMenu());
       } else {

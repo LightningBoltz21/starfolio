@@ -1,5 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:starfolio/data/repositories/authentication/authentication_repository.dart';
 import 'package:starfolio/features/discover/screens/portfolio/portfolio.dart';
 import 'package:starfolio/features/discover/screens/portfolio/widgets/portfolio_app_bar.dart';
 import 'package:starfolio/utils/constants/sizes.dart';
@@ -52,10 +55,13 @@ class Connect extends StatelessWidget {
                 var userString = "${user.fullName}, ${user.gradeRole} @ ${user.schoolOrg}";
 
                 return GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     // Handle the onTap event
-                    Get.to(() => Portfolio(userProfile: user));
-                  },
+                    await userController.fetchUserById(user.id);
+                    Get.to(() => const Portfolio());
+                    if (kDebugMode) {
+                      print(user.id);
+                    }},
                   child: GridTile(
                     footer: GridTileBar(
                       backgroundColor: TColors.primary,

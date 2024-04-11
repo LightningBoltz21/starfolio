@@ -43,6 +43,31 @@ class UserController extends GetxController {
     });
   }
 
+  Future<void> fetchUserById(String userId) async {
+    try {
+      // Get the document reference from Firestore using the userId
+      DocumentSnapshot<Map<String, dynamic>> userDocSnapshot =
+      await FirebaseFirestore.instance.collection('Users').doc(userId).get();
+
+      // If the document exists, convert the data to a UserModel and update the `user` observable
+      if (userDocSnapshot.exists && userDocSnapshot.data() != null) {
+        user.value = UserModel.fromSnapshot(userDocSnapshot);
+      } else {
+        // Handle the case where the user does not exist
+        if (kDebugMode) {
+          print("No user found for id: $userId");
+        }
+        user.value = UserModel.empty(); // or however you handle non-existent users
+      }
+    } catch (e) {
+      // Handle any errors that occur during the fetch
+      if (kDebugMode) {
+        print("Error fetching user by id: $e");
+      }
+      user.value = UserModel.empty(); // Use an appropriate default or error value
+    }
+  }
+
   void fetchAllUsers() async {
     try {
       // Fetch all users from Firestore and update `allUsers` list

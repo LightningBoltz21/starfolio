@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:starfolio/data/repositories/authentication/authentication_repository.dart';
 import 'package:starfolio/features/discover/screens/portfolio/widgets/category_widget.dart';
 import 'package:starfolio/features/discover/screens/portfolio/widgets/portfolio_app_bar.dart';
 import 'package:starfolio/utils/constants/colors.dart';
@@ -14,18 +18,18 @@ import '../../../personalization/models/user_model.dart';
 import '../../controllers/portfolio_controller.dart';
 
 class Portfolio extends StatelessWidget {
-  final UserModel userProfile;
-  final bool isCurrentUser;
 
-  Portfolio({super.key, required this.userProfile})
-      : isCurrentUser = FirebaseAuth.instance.currentUser?.uid == userProfile.id;
+  const Portfolio({super.key});
 
   @override
   Widget build(BuildContext context) {
     // get instances of controllers with getx
+
     final UserController userController = Get.put(UserController());
     final PortfolioController portfolioController = Get.put(PortfolioController());
-    portfolioController.fetchPortfolioData(userProfile.id);
+
+    portfolioController.fetchPortfolioData(userController.user.value.id);
+    bool isCurrentUser = AuthenticationRepository().authUser?.uid == userController.user.value.id;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -39,12 +43,12 @@ class Portfolio extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // app bar with buttons (save and add category)
-                  PortfolioAppBar(isCurrentUser: isCurrentUser, userProfile: userProfile,),
+                  PortfolioAppBar(isCurrentUser: isCurrentUser, userProfile: userController.user.value,),
                   const SizedBox(height: TSizes.spaceBtwSections),
 
                   // get user image, if can't connect to firebase storage then load google image
                   Obx(() {
-                    final networkImage = userProfile.profilePicture;
+                    final networkImage = userController.user.value.profilePicture;
                     final image = networkImage.isNotEmpty
                         ? networkImage
                         : TImages.onBoardingImage1;
