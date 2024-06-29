@@ -51,7 +51,7 @@ The "lib" directory contains the majority of the files related to both Android a
     - HELPERS
         - other general helper functions to make coding easier (color mapping, get screen size,
           etc.)
-    - LOCAL STROAGE
+    - LOCAL STORAGE
         - functions to store data on the device pertaining to the app
     - POPUPS
         - loader and snackbar custom classes, dictates how long they popup, how to call them, and
