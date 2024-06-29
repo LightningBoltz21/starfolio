@@ -47,7 +47,7 @@ class ReAuthLoginForm extends StatelessWidget {
                     ),
                   ),
                 ),
-
+                const SizedBox(height: TSizes.spaceBtwItems),
                 // LOGIN BUTTON
                 SizedBox(
                     width: double.infinity,

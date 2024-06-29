@@ -35,6 +35,7 @@ class AuthenticationRepository extends GetxController {
 
   screenRedirect() async {
     final user = _auth.currentUser;
+
     if (user != null) {
       if (user.emailVerified) {
         await Get.put(UserController()).fetchUserById(user.uid);
@@ -45,11 +46,15 @@ class AuthenticationRepository extends GetxController {
       }
     } else {
       // Local Storage
+      if (kDebugMode) {
+        print("login screen");
+      }
       deviceStorage.writeIfNull('isFirstTime', true);
       deviceStorage.read('IsFirstTime') != true
           ? Get.offAll(() => const LoginScreen())
           : Get.offAll(() => const OnBoardingScreen());
     }
+
   }
 
   /// [Email Authentication] Sign In

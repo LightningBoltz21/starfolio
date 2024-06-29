@@ -4,7 +4,7 @@ class Experience {
   final DateTime endDate;
   final String description;
   final String image;
-  final int categoryIndex; // Add a field to store the category index
+  final int categoryIndex;
 
   Experience({
     required this.title,
@@ -15,3 +15,8 @@ class Experience {
     required this.categoryIndex,
   });
 }
+
+
+
+
+

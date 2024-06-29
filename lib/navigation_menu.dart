@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -16,29 +14,23 @@ class NavigationMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final controller = Get.put(NavigationController());
     final darkMode = THelperFunctions.isDarkMode(context);
 
     return Scaffold(
-      bottomNavigationBar: Obx(
-
-        () => NavigationBar(
-          height: 80,
-          elevation: 0,
-          selectedIndex: controller.selectedIndex.value,
-          onDestinationSelected: (index) => controller.selectedIndex.value = index,
-          backgroundColor: darkMode ? TColors.black : Colors.white,
-          indicatorColor: darkMode ? TColors.white.withOpacity(0.1) : TColors.black.withOpacity(0.1),
-
-          destinations: const [
-            NavigationDestination(icon: Icon(Iconsax.magic_star), label: 'PORTFOLIO'),
-            NavigationDestination(icon: Icon(Iconsax.link), label: 'CONNECT'),
-            NavigationDestination(icon: Icon(Iconsax.search_zoom_in), label: 'EXPLORE'),
-            NavigationDestination(icon: Icon(Iconsax.setting), label: 'SETTINGS'),
-          ],
-        ),
-      ),
+      bottomNavigationBar: Obx(() => NavigationBar(
+        height: 80,
+        elevation: 0,
+        selectedIndex: controller.selectedIndex.value,
+        onDestinationSelected: controller.handleSelectedIndex,
+        backgroundColor: darkMode ? TColors.black : Colors.white,
+        indicatorColor: darkMode ? TColors.white.withOpacity(0.1) : TColors.black.withOpacity(0.1),
+        destinations: const [
+          NavigationDestination(icon: Icon(Iconsax.magic_star), label: 'PORTFOLIO'),
+          NavigationDestination(icon: Icon(Iconsax.link), label: 'CONNECT'),
+          NavigationDestination(icon: Icon(Iconsax.setting), label: 'SETTINGS'),
+        ],
+      )),
       body: Obx(() => controller.screens[controller.selectedIndex.value]),
     );
   }
@@ -46,16 +38,26 @@ class NavigationMenu extends StatelessWidget {
 
 class NavigationController extends GetxController {
   final Rx<int> selectedIndex = 0.obs;
-  final UserController userController = Get.find<UserController>();
   List<Widget>? _screens;
 
   List<Widget> get screens {
     _screens ??= [
-        Portfolio(),
-        Connect(),
-        Container(color: Colors.orange),
-        const SettingsScreen(),
-      ];
+      const Portfolio(),
+      Connect(),
+      const SettingsScreen(),
+    ];
     return _screens!;
+  }
+
+  void handleSelectedIndex(int index) async {
+    if (index == 0 || index == 2) { // Assuming Portfolio is at index 0 and Settings at index 2
+      await fetchUserDetails();
+    }
+    selectedIndex.value = index; // Update the index after fetching data
+  }
+
+  Future<void> fetchUserDetails() async {
+    UserController userController = Get.put(UserController());
+    await userController.fetchUserById(AuthenticationRepository().authUser!.uid);
   }
 }

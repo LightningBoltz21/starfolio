@@ -1,12 +1,16 @@
+import "package:clipboard/clipboard.dart";
+import "package:firebase_storage/firebase_storage.dart";
 import "package:flutter/material.dart";
 import "package:get/get.dart";
 import "package:iconsax/iconsax.dart";
 import "package:intl/intl.dart";
+import "package:path_provider/path_provider.dart";
 import "package:share_plus/share_plus.dart";
 import "package:starfolio/features/discover/screens/portfolio/widgets/portfolio_app_bar.dart";
 import "package:starfolio/utils/constants/colors.dart";
 import "package:starfolio/utils/constants/sizes.dart";
-
+import 'dart:io' as io;
+import 'package:path/path.dart' as path;
 import "../../../../../common/t_circular_image.dart";
 import "../../../../../utils/constants/image_strings.dart";
 import "../../../../personalization/controllers/user_controller.dart";
@@ -39,7 +43,7 @@ class ExperienceCard extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
-      // Increased vertical margin
+
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -81,13 +85,13 @@ class ExperienceCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8.0),
-            // Added padding below the image and details
+            // padding below the image and details
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(experience.description,
                   style: const TextStyle(fontSize: 14.0)),
             ),
-            // Moved description below the image and details
+
             SizedBox(
               width: double.infinity,
               child: Column(
@@ -126,14 +130,27 @@ class ExperienceCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.share, size: 20), // Share button
-                  color: Colors.green, // Green color
-                  onPressed: () {
+                  icon: const Icon(Icons.share, size: 20),
+                  color: Colors.green,
+                  onPressed: () async {
                     // Handle share action
-                    final String shareContent =
-                        '''I experienced ${experience.title} from ${formatDate(experience.startDate)} - ${formatDate(experience.endDate)}. ${experience.description} ${experience.image}''';
+                    final String shareContent = '''I experienced ${experience.title} from ${formatDate(experience.startDate)} - ${formatDate(experience.endDate)}. ${experience.description}''';
+                    FlutterClipboard.copy(shareContent).then((value) => print('Text copied to clipboard'));
 
-                    Share.share(shareContent);
+                    // Download image from Firebase Storage
+                    try {
+                      final ref = FirebaseStorage.instance.refFromURL(experience.image);
+                      final directory = await getTemporaryDirectory();
+                      final filePath = path.join(directory.path, 'shared_image.jpg');
+                      final file = io.File(filePath);
+
+                      await ref.writeToFile(file);
+
+                      Share.shareFiles([file.path], text: shareContent);
+                    } catch (e) {
+                      // Handle any errors
+                      print('Error downloading image: $e');
+                    }
                   },
                 ),
                 const SizedBox(width: 8.0),
@@ -168,3 +185,5 @@ class ExperienceCard extends StatelessWidget {
     );
   }
 }
+
+
