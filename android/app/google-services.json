@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1084933273366",
+    "project_id": "starfolio-ff738",
+    "storage_bucket": "starfolio-ff738.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1084933273366:android:b8595f3a5edd77c869c237",
+        "android_client_info": {
+          "package_name": "com.anishmalepati.starfolio"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1084933273366-7e7mshon99f9b571g8erl0u0u07bgufr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.anishmalepati.starfolio",
+            "certificate_hash": "be0716684e8dccd85e7089806ae36b0a3ddb8ca1"
+          }
+        },
+        {
+          "client_id": "1084933273366-gdgsqo23hnr7oi4hku3t6kmlcstdki25.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfxV0UhdKJxmWH2N2oa5V6x2YGw1SmhzI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1084933273366-bsdlm3dlko2p7hqfqlg68vf6gopjuscm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1084933273366-jl29f2j2e4pjo0vadg8aqi619jagqj5k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.anishmalepati.starfolio"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,1 @@
+ /Users/anishmalepati/AndroidStudioProjects/StarFolio/.dart_tool/flutter_build/c7f0527b530f94db9b8b6805f0f262ae/native_assets.yaml: 
