@@ -11,7 +11,7 @@ The "lib" directory contains the majority of the files related to both Android a
 - the DATA folder contains user and authentication repositories that manage CRUD (create, read,
   update, and delete) operations to the Authentication and FireStore servers
 - the FEATURES folder contains controllers, models, and screens pertaining to authentication,
-  discover (your portfolio), and personalization (user profiles)
+  discover (your portfolio), and personalization (other users' profiles)
     - CONTROLLERS
         - forget_password handles the actions when a user forgets their password (password reset
           link
