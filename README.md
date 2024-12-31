@@ -1,7 +1,7 @@
 # starfolio
 
 A mobile application that enables students to create a portfolio of their high school experiences.
-Created by Anish Malepati, 2024 as an FBLA project.
+Created by Anish Malepati in 2024 as an FBLA project.
 
 The "lib" directory contains the majority of the files related to both Android and iOS development:
 
